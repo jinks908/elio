@@ -30,7 +30,12 @@ pub(super) fn render_search_overlay(
         popup,
     );
 
-    let inner = helpers::inner_with_padding(popup);
+    // let inner = helpers::inner_with_padding(popup);
+    // NOTE: Set padding manually
+    let inner = popup.inner(Margin {
+        horizontal: 2,
+        vertical: 2,
+    });
     let rows = Layout::default()
         .direction(Direction::Vertical)
         .constraints([

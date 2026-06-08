@@ -3,7 +3,7 @@ use crate::config::KeyBindings;
 use crate::ui::{helpers, theme::Palette};
 use ratatui::{
     Frame,
-    layout::{Alignment, Constraint, Direction, Layout, Rect},
+    layout::{Alignment, Constraint, Direction, Layout, Margin, Rect},
     style::{Modifier, Style},
     text::{Line, Span},
     widgets::{Block, BorderType, Borders, Clear, Paragraph, Wrap},
@@ -123,7 +123,10 @@ pub(super) fn render_help(
             .border_style(Style::default().fg(palette.border)),
         popup,
     );
-    let inner = helpers::inner_with_padding(popup);
+    let inner = popup.inner(Margin {
+        horizontal: 4,
+        vertical: 2,
+    });
     let rows = Layout::default()
         .direction(Direction::Vertical)
         .constraints([

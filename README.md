@@ -3,6 +3,27 @@
 ## Changes from Upstream
 See [elio-fm/elio](https://github.com/elio-fm/elio)
 
+### Add: More padding on Help / Search panels
+- `help.rs:127` now uses `Margin { horizontal: 2, vertical: 2 }` directly instead of `inner_with_padding` (which used 1, 1). The extra 1-cell margin on each side gives the content a gap between the border and the text. Adjust the horizontal/vertical values if you want more or less padding on specific sides.
+- `search.rs:35` - Same as above
+
+---
+
+### Refactor: Clean up some clippy warnings
+`collapsible_if` (3 instances)
+
+The pattern is an outer `if` whose entire body is a single inner `if` - two nested conditions with no else branches and no code between them. Rust (since 1.64 via `let_chains`) lets you combine multiple conditions in one `if` using `&&`, including `let` bindings. Collapsing them removes a level of indentation and makes it visually obvious that both conditions must hold together - there's no branching between them.
+
+`redundant_closure (map(|s| PathBuf::from(s)))`
+
+The closure `|s| PathBuf::from(s)` just calls `PathBuf::from` with its argument unchanged - it's a wrapper that adds nothing. You can pass the function itself as `PathBuf::from` directly to `.map()`. Rust will coerce it to the right function pointer type.
+
+`manual_is_multiple_of (bytes.len() % 2 != 0)`
+
+`% 2 != 0` is the classic "is odd" check, but it's written as modulo arithmetic rather than intent. `is_multiple_of(2)` (stabilized in Rust 1.87) states the intent directly - "is this length a multiple of 2?" - and the ! negates it. Same semantics, clearer meaning.
+
+---
+
 ### Feat: Custom keybindings for Up/Down in Search panel
 1. `src/config/keys.rs`:
   - Added `SearchSelectUp` and `SearchSelectDown` to the Action enum
