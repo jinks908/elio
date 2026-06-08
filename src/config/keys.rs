@@ -46,6 +46,8 @@ pub(crate) enum Action {
     ScrollPreviewRight,
     ScrollPreviewUp,
     ScrollPreviewDown,
+    SearchSelectUp,
+    SearchSelectDown,
 }
 
 #[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
@@ -139,20 +141,23 @@ impl std::fmt::Display for NamedKey {
 pub(crate) enum KeyContext {
     Normal,
     Trash,
+    Search,
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 struct KeyContexts(u8);
 
 impl KeyContexts {
-    const NORMAL: Self = Self(0b01);
-    const TRASH: Self = Self(0b10);
+    const NORMAL: Self = Self(0b001);
+    const TRASH: Self = Self(0b010);
+    const SEARCH: Self = Self(0b100);
     const ALL: Self = Self(Self::NORMAL.0 | Self::TRASH.0);
 
     fn contains(self, context: KeyContext) -> bool {
         let mask = match context {
             KeyContext::Normal => Self::NORMAL,
             KeyContext::Trash => Self::TRASH,
+            KeyContext::Search => Self::SEARCH,
         };
         self.intersects(mask)
     }
@@ -167,6 +172,7 @@ impl Action {
         match self {
             Self::Rename => KeyContexts::NORMAL,
             Self::RestoreFromTrash => KeyContexts::TRASH,
+            Self::SearchSelectUp | Self::SearchSelectDown => KeyContexts::SEARCH,
             _ => KeyContexts::ALL,
         }
     }
@@ -410,6 +416,8 @@ pub(crate) struct KeyBindings {
     pub scroll_preview_right: KeyList,
     pub scroll_preview_up: KeyList,
     pub scroll_preview_down: KeyList,
+    pub search_select_up: KeyList,
+    pub search_select_down: KeyList,
 }
 
 /// Characters that are hard-wired to non-configurable actions and may not be
@@ -472,6 +480,8 @@ impl Default for KeyBindings {
             scroll_preview_right: KeyList::one('L'),
             scroll_preview_up: KeyList(vec![KeySpec::char('K'), KeySpec::char('[')]),
             scroll_preview_down: KeyList(vec![KeySpec::char('J'), KeySpec::char(']')]),
+            search_select_up: KeyList(vec![KeySpec::named(NamedKey::Up)]),
+            search_select_down: KeyList(vec![KeySpec::named(NamedKey::Down)]),
         }
     }
 }
@@ -526,6 +536,8 @@ pub(super) struct KeysConfigOverride {
     scroll_preview_right: Option<KeyConfigOverride>,
     scroll_preview_up: Option<KeyConfigOverride>,
     scroll_preview_down: Option<KeyConfigOverride>,
+    search_select_up: Option<KeyConfigOverride>,
+    search_select_down: Option<KeyConfigOverride>,
     #[serde(flatten)]
     unknown: BTreeMap<String, toml::Value>,
 }
@@ -569,7 +581,7 @@ impl KeyBindings {
         })
     }
 
-    fn bindings(&self) -> [(&KeyList, Action); 41] {
+    fn bindings(&self) -> [(&KeyList, Action); 43] {
         [
             (&self.quit, Action::Quit),
             (&self.quit_without_cd, Action::QuitWithoutCd),
@@ -612,6 +624,8 @@ impl KeyBindings {
             (&self.scroll_preview_right, Action::ScrollPreviewRight),
             (&self.scroll_preview_up, Action::ScrollPreviewUp),
             (&self.scroll_preview_down, Action::ScrollPreviewDown),
+            (&self.search_select_up, Action::SearchSelectUp),
+            (&self.search_select_down, Action::SearchSelectDown),
         ]
     }
 
@@ -882,6 +896,18 @@ impl KeyBindings {
                 override_value: overrides.scroll_preview_down,
                 default: defaults.scroll_preview_down.clone(),
             },
+            RawBinding {
+                name: "search_select_up",
+                action: Action::SearchSelectUp,
+                override_value: overrides.search_select_up,
+                default: defaults.search_select_up.clone(),
+            },
+            RawBinding {
+                name: "search_select_down",
+                action: Action::SearchSelectDown,
+                override_value: overrides.search_select_down,
+                default: defaults.search_select_down.clone(),
+            },
         ];
 
         // Step 1: parse each override independently, falling back to default on
@@ -978,6 +1004,8 @@ impl KeyBindings {
             scroll_preview_right: resolved(38),
             scroll_preview_up: resolved(39),
             scroll_preview_down: resolved(40),
+            search_select_up: resolved(41),
+            search_select_down: resolved(42),
         }
     }
 }

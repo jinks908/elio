@@ -121,3 +121,5 @@
 # scroll_preview_down  = ["J", "]"]   # Shift+J, ]
 # scroll_preview_left  = "H"           # Shift+H
 # scroll_preview_right = "L"           # Shift+L
+# search_select_up     = "ctrl+k"     # Up arrow by default
+# search_select_down   = "ctrl+j"     # Down arrow by default

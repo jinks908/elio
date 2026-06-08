@@ -175,8 +175,14 @@ impl App {
             }
             KeyCode::Left => self.move_search_cursor(-1),
             KeyCode::Right => self.move_search_cursor(1),
-            KeyCode::Up => self.move_search_selection(-1),
-            KeyCode::Down => self.move_search_selection(1),
+            _ if matches!(
+                crate::config::keys().action_for_key_in_context(key, crate::config::KeyContext::Search),
+                Some(crate::config::Action::SearchSelectUp)
+            ) => self.move_search_selection(-1),
+            _ if matches!(
+                crate::config::keys().action_for_key_in_context(key, crate::config::KeyContext::Search),
+                Some(crate::config::Action::SearchSelectDown)
+            ) => self.move_search_selection(1),
             KeyCode::PageUp => self.page_search(-1),
             KeyCode::PageDown => self.page_search(1),
             KeyCode::Home => self.move_search_cursor_to(0),

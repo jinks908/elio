@@ -272,6 +272,7 @@ impl App {
                     let _ = self.scroll_preview_lines(1);
                 }
             }
+            Action::SearchSelectUp | Action::SearchSelectDown => {}
         }
         Ok(())
     }
