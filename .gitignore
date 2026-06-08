@@ -5,3 +5,4 @@
 /vendor-*.tar.zst
 *.rpm
 *.src.rpm
+TODO.md
