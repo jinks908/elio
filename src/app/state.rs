@@ -219,7 +219,6 @@ pub(super) struct CopyOverlay {
 
 #[derive(Clone, Debug)]
 pub(super) enum GoToDestination {
-    Top,
     Path(PathBuf),
     Missing(String),
 }

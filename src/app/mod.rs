@@ -44,7 +44,9 @@ pub use self::types::{
 };
 #[cfg(test)]
 pub use crate::core::SidebarItem;
-pub use crate::core::{Entry, EntryKind, SidebarItemKind, SidebarRow, SortMode};
+#[cfg(test)]
+pub use crate::core::SidebarItemKind;
+pub use crate::core::{Entry, EntryKind, SidebarRow, SortMode};
 
 impl App {
     pub fn set_frame_state(&mut self, frame_state: FrameState) -> bool {

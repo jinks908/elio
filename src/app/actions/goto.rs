@@ -1,11 +1,10 @@
 use super::super::{
-    App, SidebarItemKind,
+    App,
     state::{GoToDestination, GoToOverlay, GoToOverlayRow},
 };
-use crate::fs::{rect_contains, trash_dir};
+use crate::fs::rect_contains;
 use anyhow::Result;
 use crossterm::event::{KeyCode, KeyEvent, KeyModifiers, MouseButton, MouseEvent, MouseEventKind};
-use std::path::PathBuf;
 
 impl App {
     pub fn goto_is_open(&self) -> bool {
@@ -126,10 +125,6 @@ impl App {
         };
 
         match destination {
-            GoToDestination::Top => {
-                self.overlays.goto = None;
-                self.select_index(0);
-            }
             GoToDestination::Path(path) => {
                 self.overlays.goto = None;
                 self.set_dir(path)?;
@@ -144,91 +139,30 @@ impl App {
 }
 
 fn build_goto_overlay(app: &App) -> GoToOverlay {
-    let rows = vec![
-        build_goto_row('g', "top", GoToDestination::Top),
-        build_goto_row(
-            'd',
-            "downloads",
-            downloads_destination(app)
-                .map(GoToDestination::Path)
-                .unwrap_or_else(|| GoToDestination::Missing("Downloads not available".to_string())),
-        ),
-        build_goto_row(
-            'h',
-            "home",
-            crate::fs::home_dir()
-                .map(GoToDestination::Path)
-                .unwrap_or_else(|| GoToDestination::Missing("Home not available".to_string())),
-        ),
-        build_goto_row(
-            'c',
-            config_label(),
-            config_directory()
-                .map(GoToDestination::Path)
-                .unwrap_or_else(|| {
-                    GoToDestination::Missing(format!("{} not available", config_label()))
-                }),
-        ),
-        build_goto_row(
-            't',
-            "trash",
-            trash_destination(app)
-                .map(GoToDestination::Path)
-                .unwrap_or_else(|| GoToDestination::Missing("Trash not available".to_string())),
-        ),
-    ];
+    let rows = app
+        .navigation
+        .sidebar
+        .iter()
+        .filter_map(|row| row.item())
+        .take(5)
+        .enumerate()
+        .map(|(i, item)| {
+            let shortcut = char::from_digit((i + 1) as u32, 10).unwrap_or('?');
+            let destination = if item.path.exists() {
+                GoToDestination::Path(item.path.clone())
+            } else {
+                GoToDestination::Missing(format!("{} not available", item.title))
+            };
+            GoToOverlayRow {
+                shortcut,
+                label: item.title.clone(),
+                destination,
+            }
+        })
+        .collect();
 
     GoToOverlay {
         title: "Go to".to_string(),
         rows,
     }
-}
-
-fn build_goto_row(shortcut: char, label: &str, destination: GoToDestination) -> GoToOverlayRow {
-    GoToOverlayRow {
-        shortcut,
-        label: label.to_string(),
-        destination,
-    }
-}
-
-fn config_label() -> &'static str {
-    if cfg!(target_os = "macos") {
-        "App Support"
-    } else if cfg!(windows) {
-        "AppData"
-    } else {
-        ".config"
-    }
-}
-
-fn downloads_destination(app: &App) -> Option<PathBuf> {
-    app.navigation
-        .sidebar
-        .iter()
-        .filter_map(|row| row.item())
-        .find(|item| item.kind == SidebarItemKind::Downloads)
-        .map(|item| item.path.clone())
-        .or_else(|| crate::fs::home_dir().map(|home| home.join("Downloads")))
-        .filter(|path| path.exists())
-}
-
-/// Returns the platform config home — one level above elio's own config dir.
-///
-/// - Linux / BSD: `~/.config` (or `$XDG_CONFIG_HOME`)
-/// - macOS: `~/Library/Application Support`
-/// - Windows: `%APPDATA%`
-fn config_directory() -> Option<PathBuf> {
-    let dir = crate::config::config_dir()?;
-    dir.parent().map(PathBuf::from)
-}
-
-fn trash_destination(app: &App) -> Option<PathBuf> {
-    app.navigation
-        .sidebar
-        .iter()
-        .filter_map(|row| row.item())
-        .find(|item| item.kind == SidebarItemKind::Trash)
-        .map(|item| item.path.clone())
-        .or_else(|| crate::fs::home_dir().and_then(|home| trash_dir(&home)))
 }
