@@ -138,6 +138,7 @@ impl App {
     }
 }
 
+// Build the GoToOverlay based on the current navigation sidebar items
 fn build_goto_overlay(app: &App) -> GoToOverlay {
     let rows = app
         .navigation
