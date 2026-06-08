@@ -26,7 +26,7 @@ pub(super) fn render_search_overlay(
 
     frame.render_widget(Clear, popup);
     frame.render_widget(
-        helpers::panel_block(" Fuzzy Find ", palette.chrome_alt, palette),
+        helpers::panel_block(" Search ", palette.chrome_alt, palette),
         popup,
     );
 
