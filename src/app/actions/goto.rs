@@ -62,6 +62,15 @@ impl App {
             KeyCode::Esc => {
                 self.overlays.goto = None;
             }
+            KeyCode::Char('0')
+                if !key
+                    .modifiers
+                    .intersects(KeyModifiers::CONTROL | KeyModifiers::ALT) =>
+            {
+                self.overlays.goto = None;
+                let start_dir = self.navigation.start_dir.clone();
+                self.set_dir(start_dir)?;
+            }
             KeyCode::Char(ch)
                 if !key
                     .modifiers

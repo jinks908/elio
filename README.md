@@ -3,6 +3,18 @@
 ## Changes from Upstream
 See [elio-fm/elio](https://github.com/elio-fm/elio)
 
+### Feat: Go back to original directory (i.e., when `elio` is launched)
+`src/app/state.rs`
+- Added `start_dir`: `PathBuf` field to `NavigationState`
+- Initialized it from `cwd.clone()` in `new_at_startup` (set once, never changes)
+
+`src/app/actions/goto.rs`
+- Added a '0' arm in `handle_goto_key` — pressed while the Go To overlay is open, it closes the overlay and navigates to `start_dir`
+
+So the flow is exactly like `g1–g5`: press `g` to open the overlay, then `0` to jump back to the launch directory.
+
+---
+
 ### Add: More padding on Help / Search panels
 - `help.rs:127` now uses `Margin { horizontal: 2, vertical: 2 }` directly instead of `inner_with_padding` (which used 1, 1). The extra 1-cell margin on each side gives the content a gap between the border and the text. Adjust the horizontal/vertical values if you want more or less padding on specific sides.
 - `search.rs:35` - Same as above

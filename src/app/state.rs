@@ -489,6 +489,7 @@ pub(super) struct DirectoryRuntime {
 
 pub(crate) struct NavigationState {
     pub(crate) cwd: PathBuf,
+    pub(crate) start_dir: PathBuf,
     pub(crate) entries: Vec<Entry>,
     pub(crate) sidebar: Vec<SidebarRow>,
     pub(crate) selected: usize,
@@ -624,6 +625,7 @@ impl App {
         let (directory_watch_tx, directory_watch_rx) = std::sync::mpsc::channel();
         let mut app = Self {
             navigation: NavigationState {
+                start_dir: cwd.clone(),
                 cwd,
                 entries: Vec::new(),
                 sidebar: Vec::new(),
