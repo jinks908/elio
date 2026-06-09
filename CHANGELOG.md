@@ -5,12 +5,53 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+> [!Note]
+> See detailed changelog in `DETAILS.md`
+
+## [2.0.0] - 2026-06-09
 
 ### Added
 
+#### CD overlay and file path support in `elio <path>`
 - Added a CD overlay (`C` by default) for navigating directly to any typed path. Supports `~` expansion and navigates to the parent directory when a file path is entered. Configurable via `cd_overlay` in `[keys]`.
 - `elio <path>` now accepts file paths as well as directories, opening the parent directory and focusing the file entry, including hidden files, file symlinks, and broken symlinks.
+
+#### Go back to original directory (i.e., when `elio` is launched)
+`src/app/state.rs`
+- Added `start_dir`: `PathBuf` field to `NavigationState`
+- Initialized it from `cwd.clone()` in `new_at_startup` (set once, never changes)
+
+`src/app/actions/goto.rs`
+- Added a '0' arm in `handle_goto_key` — pressed while the Go To overlay is open, it closes the overlay and navigates to `start_dir`
+
+So the flow is exactly like `g1–g5`: press `g` to open the overlay, then `0` to jump back to the launch directory.
+
+## [1.9.0] - 2026-06-08
+
+### Added
+
+#### More padding on Help / Search panels
+- `help.rs:127` now uses `Margin { horizontal: 2, vertical: 2 }` directly instead of `inner_with_padding` (which used 1, 1). The extra 1-cell margin on each side gives the content a gap between the border and the text. Adjust the horizontal/vertical values if you want more or less padding on specific sides.
+- `search.rs:35` - Same as above
+
+#### Custom keybindings for Up/Down in Search panel
+1. `src/config/keys.rs`:
+  - Added `SearchSelectUp` and `SearchSelectDown` to the Action enum
+  - Added `KeyContext::Search` and `KeyContexts::SEARCH` bit (isolated from ALL — search keys don't collide with browser bindings)
+  - Added `search_select_up`/`search_select_down` fields to `KeyBindings` with defaults of up/down arrow keys
+
+> [!Tip]
+> To use custom bindings, add this to `config.toml`:
+
+```toml
+[keys]
+search_select_up   = "ctrl+k"
+search_select_down = "ctrl+j"
+```
+
+#### "Go to" panel shows top 5 destinations from "Places" panel
+- `src/app/actions/goto.rs` - `build_goto_overlay` now iterates `app.navigation.sidebar`, takes the first 5 `SidebarRow::Item` entries, and builds rows with shortcuts 1-5 and labels/paths from each item's title/path. All the old hardcoded rows and their helper functions are gone.
+
 
 ## [1.8.0] - 2026-06-06
 
