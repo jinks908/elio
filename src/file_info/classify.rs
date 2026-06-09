@@ -49,12 +49,15 @@ pub(crate) fn inspect_entry_fast(entry: &Entry) -> FileFacts {
 fn inspect_path_with_name(path: &Path, display_name: Option<&str>, kind: EntryKind) -> FileFacts {
     let (_name_for_type, name, ext, mut facts) =
         inspect_path_with_name_base(path, display_name, kind);
-    if ext.is_empty() {
-        facts = sniff_extensionless_file_type(path).unwrap_or(facts);
-    } else if matches!(ext.as_str(), "conf" | "cfg") {
-        facts = sniff_config_file_type(path).unwrap_or(facts);
+    if kind != EntryKind::Directory {
+        if ext.is_empty() {
+            facts = sniff_extensionless_file_type(path).unwrap_or(facts);
+        } else if matches!(ext.as_str(), "conf" | "cfg") {
+            facts = sniff_config_file_type(path).unwrap_or(facts);
+        }
+        facts = sniff_license_file_type(path, &name, &ext, facts).unwrap_or(facts);
     }
-    sniff_license_file_type(path, &name, &ext, facts).unwrap_or(facts)
+    facts
 }
 
 fn inspect_path_with_name_fast(
@@ -63,6 +66,9 @@ fn inspect_path_with_name_fast(
     kind: EntryKind,
 ) -> FileFacts {
     let (_name_for_type, name, ext, facts) = inspect_path_with_name_base(path, display_name, kind);
+    if kind == EntryKind::Directory {
+        return facts;
+    }
     sniff_browser_license_file_type(path, &name, &ext, facts).unwrap_or(facts)
 }
 

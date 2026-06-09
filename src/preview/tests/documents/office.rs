@@ -10,7 +10,7 @@ fn doc_preview_shows_legacy_document_metadata() {
         &[
             (2, DocTestPropertyValue::Text("Quarterly Report")),
             (4, DocTestPropertyValue::Text("Regueiro")),
-            (12, DocTestPropertyValue::Timestamp(1_767_225_600)),
+            (12, DocTestPropertyValue::Timestamp(1_767_484_800)),
             (14, DocTestPropertyValue::Count(12)),
             (15, DocTestPropertyValue::Count(4_238)),
             (18, DocTestPropertyValue::Text("LibreOffice Writer")),

@@ -1,6 +1,6 @@
 # Fork of elio-fm/elio
 
-## Changes from Upstream
+## Changes from Upstream (Features, Additions, Mods)
 See [elio-fm/elio](https://github.com/elio-fm/elio)
 
 ### Feat: Go back to original directory (i.e., when `elio` is launched)
@@ -18,21 +18,6 @@ So the flow is exactly like `g1–g5`: press `g` to open the overlay, then `0` t
 ### Add: More padding on Help / Search panels
 - `help.rs:127` now uses `Margin { horizontal: 2, vertical: 2 }` directly instead of `inner_with_padding` (which used 1, 1). The extra 1-cell margin on each side gives the content a gap between the border and the text. Adjust the horizontal/vertical values if you want more or less padding on specific sides.
 - `search.rs:35` - Same as above
-
----
-
-### Refactor: Clean up some clippy warnings
-`collapsible_if` (3 instances)
-
-The pattern is an outer `if` whose entire body is a single inner `if` - two nested conditions with no else branches and no code between them. Rust (since 1.64 via `let_chains`) lets you combine multiple conditions in one `if` using `&&`, including `let` bindings. Collapsing them removes a level of indentation and makes it visually obvious that both conditions must hold together - there's no branching between them.
-
-`redundant_closure (map(|s| PathBuf::from(s)))`
-
-The closure `|s| PathBuf::from(s)` just calls `PathBuf::from` with its argument unchanged - it's a wrapper that adds nothing. You can pass the function itself as `PathBuf::from` directly to `.map()`. Rust will coerce it to the right function pointer type.
-
-`manual_is_multiple_of (bytes.len() % 2 != 0)`
-
-`% 2 != 0` is the classic "is odd" check, but it's written as modulo arithmetic rather than intent. `is_multiple_of(2)` (stabilized in Rust 1.87) states the intent directly - "is this length a multiple of 2?" - and the ! negates it. Same semantics, clearer meaning.
 
 ---
 
@@ -60,3 +45,33 @@ search_select_down = "ctrl+j"
 - `src/app/actions/goto.rs` - `build_goto_overlay` now iterates `app.navigation.sidebar`, takes the first 5 `SidebarRow::Item` entries, and builds rows with shortcuts 1-5 and labels/paths from each item's title/path. All the old hardcoded rows and their helper functions are gone.
 - `src/app/state.rs` - Removed `GoToDestination::Top` (no longer constructed).
 - `src/app/mod.rs` - Moved `SidebarItemKind` re-export behind `#[cfg(test)]` since it's only needed in tests now.
+
+---
+
+## Bug Fixes, Test Fixes, and Refactors
+
+### Refactor: Fix some pre-existing test failures
+- Theme directory class (2 tests): `inspect_path_with_name` and `inspect_path_with_name_fast` were calling file-content sniffers (`sniff_extensionless_file_type`, `sniff_license_file_type`, etc.) even when `kind == EntryKind::Directory`. This caused a relative path like `Path::new("build")` to accidentally open and sniff the actual build file that exists at the repo root, classifying it as `Code`. The fix guards all sniffing behind `kind != EntryKind::Directory`.
+- Doc timestamp (1 test): The test used Unix timestamp `1_767_225_600 (2026-01-01 00:00:00 UTC)`, which rolls back to `Dec 31 2025` in any timezone west of UTC. Changed it to `1_767_484_800 (2026-01-05 00:00:00 UTC)`, which stays in 2026 everywhere.
+
+> [!Note]
+> The `build` file was the direct cause of all three theme test failures. Without it, `inspect_path_with_name("build", Directory)` would call `sniff_extensionless_file_type(Path::new("build"))`, find no file, return `None`, and fall back to the correct `Directory` class. The tests would have passed.
+>
+> However, the underlying code is still genuinely buggy — calling file-content sniffers on a path that was already identified as a directory is wrong regardless of whether a file happens to shadow the name. The fix is correct and worth keeping: directories should never be sniffed. So while renaming your shell script would have made the tests pass locally, the bug would still exist on any machine where a same-named file happened to be in the working directory, and it's the kind of thing that would surface in CI someday.
+>
+> The timestamp fix is independent of your shell script — that one was a real timezone bug.
+
+---
+
+### Refactor: Clean up some clippy warnings
+`collapsible_if` (3 instances)
+
+The pattern is an outer `if` whose entire body is a single inner `if` - two nested conditions with no else branches and no code between them. Rust (since 1.64 via `let_chains`) lets you combine multiple conditions in one `if` using `&&`, including `let` bindings. Collapsing them removes a level of indentation and makes it visually obvious that both conditions must hold together - there's no branching between them.
+
+`redundant_closure (map(|s| PathBuf::from(s)))`
+
+The closure `|s| PathBuf::from(s)` just calls `PathBuf::from` with its argument unchanged - it's a wrapper that adds nothing. You can pass the function itself as `PathBuf::from` directly to `.map()`. Rust will coerce it to the right function pointer type.
+
+`manual_is_multiple_of (bytes.len() % 2 != 0)`
+
+`% 2 != 0` is the classic "is odd" check, but it's written as modulo arithmetic rather than intent. `is_multiple_of(2)` (stabilized in Rust 1.87) states the intent directly - "is this length a multiple of 2?" - and the ! negates it. Same semantics, clearer meaning.
