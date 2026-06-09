@@ -24,9 +24,9 @@ pub(super) fn render_help(
         e(&kb.search_folders.to_string(), "search folders"),
         e(&kb.search_files.to_string(), "search files"),
         e("Ctrl+←→", "move by word"),
-        e("Ctrl+Backspace", "delete previous word"),
-        e("Ctrl+Del", "delete next word"),
-        e("Ctrl+W / Alt+D", "fallback word delete"),
+        e("Ctrl+Backspace", "del prev word"),
+        e("Ctrl+Del", "del next word"),
+        // e("Ctrl+W / Alt+D", "fallback word delete"),
     ];
     let clipboard_entries = clipboard_entries(kb);
     let rename_key = kb.rename.to_string();
@@ -55,14 +55,8 @@ pub(super) fn render_help(
     let preview_horizontal_key =
         format_preview_scroll_key(&kb.scroll_preview_left, &kb.scroll_preview_right);
     let preview_entries = vec![
-        e(&preview_vertical_key, "step page or scroll"),
-        e(&preview_horizontal_key, "scroll left / right"),
-    ];
-    let mouse_entries = vec![
-        e("Click", "select item"),
-        e("Double-click", "open item"),
-        e("Wheel", "scroll"),
-        e("Shift+Wheel", "scroll sideways"),
+        e(&preview_vertical_key, "scroll /"),
+        e(&preview_horizontal_key, "scroll  / "),
     ];
     let left_sections = vec![
         HelpSection {
@@ -74,22 +68,18 @@ pub(super) fn render_help(
             entries: search_entries,
         },
         HelpSection {
-            title: "Selection & Clipboard",
-            entries: clipboard_entries,
+            title: "Preview",
+            entries: preview_entries,
         },
     ];
     let right_sections = vec![
-        HelpSection {
-            title: "Mouse",
-            entries: mouse_entries,
-        },
         HelpSection {
             title: "File Actions",
             entries: files_entries,
         },
         HelpSection {
-            title: "Preview",
-            entries: preview_entries,
+            title: "Selection & Clipboard",
+            entries: clipboard_entries,
         },
         HelpSection {
             title: "View",
@@ -111,7 +101,7 @@ pub(super) fn render_help(
                         .add_modifier(Modifier::BOLD),
                 ),
                 Span::styled(
-                    " Keyboard and mouse controls ",
+                    " Keyboard controls ",
                     Style::default()
                         .fg(palette.accent_text)
                         .add_modifier(Modifier::BOLD),
@@ -130,40 +120,19 @@ pub(super) fn render_help(
     let rows = Layout::default()
         .direction(Direction::Vertical)
         .constraints([
-            Constraint::Length(1),
             Constraint::Min(8),
             Constraint::Length(1),
         ])
         .split(inner);
 
-    frame.render_widget(
-        Paragraph::new(vec![Line::from(vec![
-            helpers::chip_span("navigate", palette.accent_soft, palette.accent_text, true),
-            Span::raw(" "),
-            helpers::chip_span("search", palette.accent_soft, palette.accent_text, true),
-            Span::raw(" "),
-            helpers::chip_span("selection", palette.accent_soft, palette.accent_text, true),
-            Span::raw(" "),
-            helpers::chip_span("mouse", palette.accent_soft, palette.accent_text, true),
-            Span::raw(" "),
-            helpers::chip_span("actions", palette.accent_soft, palette.accent_text, true),
-            Span::raw(" "),
-            helpers::chip_span("preview", palette.accent_soft, palette.accent_text, true),
-            Span::raw(" "),
-            helpers::chip_span("view", palette.accent_soft, palette.accent_text, true),
-        ])])
-        .style(Style::default().bg(palette.chrome_alt).fg(palette.text)),
-        rows[0],
-    );
-
     let cols = Layout::default()
         .direction(Direction::Horizontal)
         .constraints([
-            Constraint::Length(39),
+            Constraint::Length(41),
             Constraint::Length(3),
-            Constraint::Length(46),
+            Constraint::Length(44),
         ])
-        .split(rows[1]);
+        .split(rows[0]);
 
     frame.render_widget(
         Paragraph::new(help_column_lines(cols[0].width, &left_sections, palette))
@@ -202,7 +171,7 @@ pub(super) fn render_help(
         ]))
         .alignment(Alignment::Right)
         .style(Style::default().bg(palette.chrome_alt).fg(palette.muted)),
-        rows[2],
+        rows[1],
     );
 }
 
@@ -217,8 +186,8 @@ fn navigation_entries(kb: &KeyBindings) -> Vec<HelpEntry> {
         e(&kb.nav_up.to_string(), "move up"),
         e(&kb.nav_down.to_string(), "move down"),
         e(&parent_key, "parent folder"),
-        e(&kb.nav_right.to_string(), "enter folder"),
-        e(&kb.open_or_enter.to_string(), "enter folder / open"),
+        e(&kb.nav_right.to_string(), "enter dir"),
+        e(&kb.open_or_enter.to_string(), "enter dir / open"),
         e(&kb.go_to.to_string(), "go-to menu"),
         e(&kb.jump_first.to_string(), "first item"),
         e(&kb.jump_last.to_string(), "last item"),

@@ -10,7 +10,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [2.0.1] - 2026-06-09
 
-### Added
+### Changed
+
+#### Help panel overlay revisions
+- `src/ui/overlay_manager/help.rs`:
+- Removed top header labels
+- Removed "Mouse" section and its content
+- Increase left column width
 
 #### Jump up/down by 1/5 page with `Ctrl+u` / `Ctrl+d`
 - `config/keys.rs`: Added `JumpUp/JumpDown` Action variants, KeyBindings fields (defaulting to `Ctrl+u/Ctrl+d`), `KeysConfigOverride` fields, entries in `bindings()`, `from_override()` raw bindings, and updated `resolved()` indices
