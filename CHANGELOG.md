@@ -19,6 +19,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `app/actions/navigation.rs`: New `jump()` method using `rows_visible / 5`
 - `ui/overlay_manager/help.rs`: Added "`jump up / down`" entry in the navigation help section
 
+> [!Tip]
+> Override default bindings with:
+> 
+> ```toml
+> [keys]
+> jump_up   = "ctrl+u"
+> jump_down = "ctrl+d"
+> ```
 
 ## [2.0.0] - 2026-06-09
 
@@ -54,12 +62,12 @@ So the flow is exactly like `g1–g5`: press `g` to open the overlay, then `0` t
 
 > [!Tip]
 > To use custom bindings, add this to `config.toml`:
-
-```toml
-[keys]
-search_select_up   = "ctrl+k"
-search_select_down = "ctrl+j"
-```
+> 
+> ```toml
+> [keys]
+> search_select_up   = "ctrl+k"
+> search_select_down = "ctrl+j"
+> ```
 
 #### "Go to" panel shows top 5 destinations from "Places" panel
 - `src/app/actions/goto.rs` - `build_goto_overlay` now iterates `app.navigation.sidebar`, takes the first 5 `SidebarRow::Item` entries, and builds rows with shortcuts 1-5 and labels/paths from each item's title/path. All the old hardcoded rows and their helper functions are gone.
