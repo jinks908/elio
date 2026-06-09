@@ -8,6 +8,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 > [!Note]
 > See detailed changelog in `DETAILS.md`
 
+## [2.0.1] - 2026-06-09
+
+### Added
+
+#### Jump up/down by 1/5 page with `Ctrl+u` / `Ctrl+d`
+- `config/keys.rs`: Added `JumpUp/JumpDown` Action variants, KeyBindings fields (defaulting to `Ctrl+u/Ctrl+d`), `KeysConfigOverride` fields, entries in `bindings()`, `from_override()` raw bindings, and updated `resolved()` indices
+- `app/state.rs`: Added `JumpUp/JumpDown` to `NavigationRepeatKey`
+- `app/input/keyboard.rs`: Dispatch `Action::JumpUp/JumpDown → self.jump(±1)`, and map them to `NavigationRepeatKey`
+- `app/actions/navigation.rs`: New `jump()` method using `rows_visible / 5`
+- `ui/overlay_manager/help.rs`: Added "`jump up / down`" entry in the navigation help section
+
+
 ## [2.0.0] - 2026-06-09
 
 ### Added

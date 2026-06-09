@@ -188,8 +188,22 @@ impl App {
         self.set_selected_with_preview_mode(next, preview_mode);
     }
 
+    pub(in crate::app) fn jump(&mut self, direction: isize) {
+        let rows = (self.input.frame_state.metrics.rows_visible.max(1) as isize / 5).max(1);
+        let mode = self.rapid_nav_preview_mode(PreviewRefreshMode::Immediate);
+        let prev = self.navigation.selected;
+        if self.navigation.view_mode == ViewMode::Grid {
+            self.move_grid_vertical_with_preview_mode(direction * rows, mode);
+        } else {
+            self.set_selected_delta_with_preview_mode(direction * rows, mode);
+        }
+        if self.navigation.selected != prev {
+            self.input.last_key_nav_at = Instant::now();
+        }
+    }
+
     pub(in crate::app) fn page(&mut self, direction: isize) {
-        let rows = self.input.frame_state.metrics.rows_visible.max(1) as isize;
+        let rows = (self.input.frame_state.metrics.rows_visible.max(1) as isize / 2).max(1);
         let mode = self.rapid_nav_preview_mode(PreviewRefreshMode::Immediate);
         let prev = self.navigation.selected;
         if self.navigation.view_mode == ViewMode::Grid {

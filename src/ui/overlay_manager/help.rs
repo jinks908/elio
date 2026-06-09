@@ -209,6 +209,7 @@ pub(super) fn render_help(
 fn navigation_entries(kb: &KeyBindings) -> Vec<HelpEntry> {
     let parent_key = format_key_pair(&kb.nav_left, &kb.go_parent);
     let page_key = format_key_pair(&kb.page_up, &kb.page_down);
+    let jump_key = format_key_pair(&kb.jump_up, &kb.jump_down);
     let place_key = format_key_pair(&kb.cycle_places_next, &kb.cycle_places_previous);
     let history_key = format_key_pair(&kb.history_back, &kb.history_forward);
 
@@ -222,6 +223,7 @@ fn navigation_entries(kb: &KeyBindings) -> Vec<HelpEntry> {
         e(&kb.jump_first.to_string(), "first item"),
         e(&kb.jump_last.to_string(), "last item"),
         e(&page_key, "page up / down"),
+        e(&jump_key, "jump up / down"),
         e(&place_key, "cycle places"),
         e(&history_key, "back / forward"),
     ]

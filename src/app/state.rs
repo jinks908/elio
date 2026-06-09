@@ -75,6 +75,8 @@ pub(super) enum NavigationRepeatKey {
     Right,
     PageUp,
     PageDown,
+    JumpUp,
+    JumpDown,
     Home,
     End,
 }
