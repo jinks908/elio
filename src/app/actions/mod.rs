@@ -1,3 +1,4 @@
+mod cd;
 mod directory;
 mod goto;
 mod navigation;

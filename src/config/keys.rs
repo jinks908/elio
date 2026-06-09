@@ -48,6 +48,7 @@ pub(crate) enum Action {
     ScrollPreviewDown,
     SearchSelectUp,
     SearchSelectDown,
+    CdOverlay,
 }
 
 #[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
@@ -418,6 +419,7 @@ pub(crate) struct KeyBindings {
     pub scroll_preview_down: KeyList,
     pub search_select_up: KeyList,
     pub search_select_down: KeyList,
+    pub cd_overlay: KeyList,
 }
 
 /// Characters that are hard-wired to non-configurable actions and may not be
@@ -482,6 +484,7 @@ impl Default for KeyBindings {
             scroll_preview_down: KeyList(vec![KeySpec::char('J'), KeySpec::char(']')]),
             search_select_up: KeyList(vec![KeySpec::named(NamedKey::Up)]),
             search_select_down: KeyList(vec![KeySpec::named(NamedKey::Down)]),
+            cd_overlay: KeyList::one('C'),
         }
     }
 }
@@ -538,6 +541,7 @@ pub(super) struct KeysConfigOverride {
     scroll_preview_down: Option<KeyConfigOverride>,
     search_select_up: Option<KeyConfigOverride>,
     search_select_down: Option<KeyConfigOverride>,
+    cd_overlay: Option<KeyConfigOverride>,
     #[serde(flatten)]
     unknown: BTreeMap<String, toml::Value>,
 }
@@ -581,7 +585,7 @@ impl KeyBindings {
         })
     }
 
-    fn bindings(&self) -> [(&KeyList, Action); 43] {
+    fn bindings(&self) -> [(&KeyList, Action); 44] {
         [
             (&self.quit, Action::Quit),
             (&self.quit_without_cd, Action::QuitWithoutCd),
@@ -626,6 +630,7 @@ impl KeyBindings {
             (&self.scroll_preview_down, Action::ScrollPreviewDown),
             (&self.search_select_up, Action::SearchSelectUp),
             (&self.search_select_down, Action::SearchSelectDown),
+            (&self.cd_overlay, Action::CdOverlay),
         ]
     }
 
@@ -908,6 +913,12 @@ impl KeyBindings {
                 override_value: overrides.search_select_down,
                 default: defaults.search_select_down.clone(),
             },
+            RawBinding {
+                name: "cd_overlay",
+                action: Action::CdOverlay,
+                override_value: overrides.cd_overlay,
+                default: defaults.cd_overlay.clone(),
+            },
         ];
 
         // Step 1: parse each override independently, falling back to default on
@@ -1006,6 +1017,7 @@ impl KeyBindings {
             scroll_preview_down: resolved(40),
             search_select_up: resolved(41),
             search_select_down: resolved(42),
+            cd_overlay: resolved(43),
         }
     }
 }

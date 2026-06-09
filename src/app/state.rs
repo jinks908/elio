@@ -237,6 +237,13 @@ pub(super) struct GoToOverlay {
 }
 
 #[derive(Clone, Debug)]
+pub(super) struct CdOverlay {
+    pub(super) input: String,
+    pub(super) cursor_col: usize,
+    pub(super) error: Option<String>,
+}
+
+#[derive(Clone, Debug)]
 pub(super) struct OpenWithApp {
     pub(super) display_name: String,
     // Reserved for a future "set as default" action; not yet read at launch time.
@@ -533,6 +540,7 @@ pub(crate) struct OverlayState {
     pub(in crate::app) copy: Option<CopyOverlay>,
     pub(in crate::app) open_with: Option<OpenWithOverlay>,
     pub(in crate::app) search: Option<SearchOverlay>,
+    pub(in crate::app) cd: Option<CdOverlay>,
     pub(crate) help: bool,
 }
 

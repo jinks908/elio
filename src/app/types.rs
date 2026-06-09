@@ -54,6 +54,7 @@ pub struct FrameState {
     pub copy_panel: Option<Rect>,
     pub open_with_panel: Option<Rect>,
     pub search_panel: Option<Rect>,
+    pub cd_panel: Option<Rect>,
     pub help_panel: Option<Rect>,
     pub entries_panel: Option<Rect>,
     pub preview_panel: Option<Rect>,

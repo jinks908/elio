@@ -3,6 +3,30 @@
 ## Changes from Upstream (Features, Additions, Mods)
 See [elio-fm/elio](https://github.com/elio-fm/elio)
 
+### Feat: CD overlay and file path support in `elio <path>`
+- Added a CD overlay (`C` by default) for navigating directly to any typed path. Supports `~` expansion and navigates to the parent dir
+ectory when a file path is entered. Configurable via `cd_overlay` in `[keys]`.
+- `elio <path>` now accepts file paths as well as directories, opening the parent directory and focusing the file entry, including hidd en files, file symlinks, and broken symlinks.
+
+**New files:**
+- `src/app/actions/cd.rs` - `open_cd_overlay()`, `handle_cd_key()`, `handle_cd_mouse()`, `confirm_cd()`, and the `expand_tilde()` helper
+- `src/ui/overlay_manager/cd.rs` - renders the input box with horizontal scrolling, placeholder text, cursor positioning, and error display
+
+**Extended files:**
+- `src/app/state.rs` - `CdOverlay` struct + `cd` field on OverlayState
+- `src/app/types.rs` - `cd_panel: Option<Rect>` on `FrameState`
+- `src/app/actions/mod.rs` - mod `cd`;
+- `src/config/keys.rs` - `CdOverlay` action, `cd_overlay` field throughout (`KeyBindings`, `KeysConfigOverride`, `bindings()`, `from_override`, defaults to `C`)
+- `src/app/input/keyboard.rs` - overlay guard + `Action::CdOverlay` dispatch arm
+- `src/app/input/mouse.rs` - click-outside-to-dismiss guard
+- `src/ui/overlay_manager/mod.rs` - mod `cd`; + `render_cd_overlay` passthrough
+- `src/ui/mod.rs` - clears `cd_panel` each frame + rendering dispatch branch
+
+> [!Tip]
+> Press `C` to open the overlay, type a path (with `~` expansion), Enter to navigate, `Esc`/`Ctrl+C` to dismiss. If you point it at a file, it navigates to the file's parent.
+
+---
+
 ### Feat: Go back to original directory (i.e., when `elio` is launched)
 `src/app/state.rs`
 - Added `start_dir`: `PathBuf` field to `NavigationState`

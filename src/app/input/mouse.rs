@@ -38,6 +38,10 @@ impl App {
             return self.handle_search_mouse(mouse);
         }
 
+        if self.overlays.cd.is_some() {
+            return self.handle_cd_mouse(mouse);
+        }
+
         if self.overlays.help {
             if matches!(mouse.kind, MouseEventKind::Down(MouseButton::Left)) {
                 self.clear_wheel_scroll();

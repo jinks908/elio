@@ -3,6 +3,7 @@ use crate::ui::theme::Palette;
 use ratatui::{Frame, layout::Rect};
 
 mod bulk_rename;
+mod cd;
 mod copy;
 mod create;
 mod goto;
@@ -101,6 +102,16 @@ pub(super) fn render_search_overlay(
     palette: Palette,
 ) {
     search::render_search_overlay(frame, area, app, state, palette);
+}
+
+pub(super) fn render_cd_overlay(
+    frame: &mut Frame<'_>,
+    area: Rect,
+    app: &App,
+    state: &mut FrameState,
+    palette: Palette,
+) {
+    cd::render_cd_overlay(frame, area, app, state, palette);
 }
 
 pub(super) fn render_help(

@@ -59,6 +59,10 @@ impl App {
             return self.handle_search_key(key);
         }
 
+        if self.overlays.cd.is_some() {
+            return self.handle_cd_key(key);
+        }
+
         if self.should_debounce_navigation_key(key) {
             return Ok(());
         }
@@ -273,6 +277,7 @@ impl App {
                 }
             }
             Action::SearchSelectUp | Action::SearchSelectDown => {}
+            Action::CdOverlay => self.open_cd_overlay(),
         }
         Ok(())
     }

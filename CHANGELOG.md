@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added a CD overlay (`C` by default) for navigating directly to any typed path. Supports `~` expansion and navigates to the parent directory when a file path is entered. Configurable via `cd_overlay` in `[keys]`.
 - `elio <path>` now accepts file paths as well as directories, opening the parent directory and focusing the file entry, including hidden files, file symlinks, and broken symlinks.
 
 ## [1.8.0] - 2026-06-06

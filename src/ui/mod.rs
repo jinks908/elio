@@ -36,6 +36,7 @@ pub fn render(frame: &mut Frame<'_>, app: &App, state: &mut FrameState) {
     state.copy_panel = None;
     state.open_with_panel = None;
     state.search_panel = None;
+    state.cd_panel = None;
     state.help_panel = None;
     state.preview_panel = None;
     state.preview_body_area = None;
@@ -102,6 +103,8 @@ pub fn render(frame: &mut Frame<'_>, app: &App, state: &mut FrameState) {
         overlay_manager::render_open_with_overlay(frame, area, app, state, palette);
     } else if app.search_is_open() {
         overlay_manager::render_search_overlay(frame, area, app, state, palette);
+    } else if app.cd_is_open() {
+        overlay_manager::render_cd_overlay(frame, area, app, state, palette);
     } else if app.overlays.help {
         overlay_manager::render_help(frame, area, state, palette);
     }
