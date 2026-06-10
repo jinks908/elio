@@ -8,6 +8,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 > [!Note]
 > See detailed changelog in `DETAILS.md`
 
+## [2.1.0] - 2026-06-10
+
+### Added
+
+#### Added `[go_to]` section in user config
+
+Users can now configure the "Go to" panel with custom entries, each having a title and a path. When configured, these entries appear in the "Go to" overlay instead of the default sidebar items.
+
+- `src/config/goto.rs` (new module) — `GoToConfig` and `GoToEntry` structs with TOML parsing, reusing `expand_custom_place_path` from `places.rs`
+- `src/config/places.rs` — made `expand_custom_place_path pub(super)` so `goto.rs` can use it
+- `src/config/mod.rs` — wired in the new goto module, `Config.go_to` field, `ConfigFile.go_to` field, and `pub(crate) fn go_to()`
+- `src/app/actions/goto.rs` — `build_goto_overlay` now checks `crate::config::go_to().entries`; uses them when non-empty, falls back to sidebar items otherwise
+- `examples/config.toml` — documented the new `[go_to]` section
+
+> [!Tip]
+> Add "Go to" locations in `config.toml`:
+> ```toml
+> [go_to]
+> entries = [
+>     { title = "Home",      path = "~" },
+>     { title = "Documents", path = "~/Documents" },
+>     { title = "Downloads", path = "~/Downloads" },
+>     { title = "Config",    path = "~/.config" },
+>     { title = "Projects",  path = "~/code" },
+> ]
+> ```
+> Up to 5 entries are shown. Omitting [go_to] (or entries = []) falls back to the first 5 Places items, preserving the current behavior.
+
+
 ## [2.0.1] - 2026-06-09
 
 ### Changed

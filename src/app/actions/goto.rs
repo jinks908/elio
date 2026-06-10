@@ -147,29 +147,50 @@ impl App {
     }
 }
 
-// Build the GoToOverlay based on the current navigation sidebar items
 fn build_goto_overlay(app: &App) -> GoToOverlay {
-    let rows = app
-        .navigation
-        .sidebar
-        .iter()
-        .filter_map(|row| row.item())
-        .take(5)
-        .enumerate()
-        .map(|(i, item)| {
-            let shortcut = char::from_digit((i + 1) as u32, 10).unwrap_or('?');
-            let destination = if item.path.exists() {
-                GoToDestination::Path(item.path.clone())
-            } else {
-                GoToDestination::Missing(format!("{} not available", item.title))
-            };
-            GoToOverlayRow {
-                shortcut,
-                label: item.title.clone(),
-                destination,
-            }
-        })
-        .collect();
+    let config_entries = &crate::config::go_to().entries;
+
+    let rows: Vec<GoToOverlayRow> = if config_entries.is_empty() {
+        app.navigation
+            .sidebar
+            .iter()
+            .filter_map(|row| row.item())
+            .take(5)
+            .enumerate()
+            .map(|(i, item)| {
+                let shortcut = char::from_digit((i + 1) as u32, 10).unwrap_or('?');
+                let destination = if item.path.exists() {
+                    GoToDestination::Path(item.path.clone())
+                } else {
+                    GoToDestination::Missing(format!("{} not available", item.title))
+                };
+                GoToOverlayRow {
+                    shortcut,
+                    label: item.title.clone(),
+                    destination,
+                }
+            })
+            .collect()
+    } else {
+        config_entries
+            .iter()
+            .take(5)
+            .enumerate()
+            .map(|(i, entry)| {
+                let shortcut = char::from_digit((i + 1) as u32, 10).unwrap_or('?');
+                let destination = if entry.path.exists() {
+                    GoToDestination::Path(entry.path.clone())
+                } else {
+                    GoToDestination::Missing(format!("{} not available", entry.title))
+                };
+                GoToOverlayRow {
+                    shortcut,
+                    label: entry.title.clone(),
+                    destination,
+                }
+            })
+            .collect()
+    };
 
     GoToOverlay {
         title: "Go to".to_string(),

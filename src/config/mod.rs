@@ -1,3 +1,4 @@
+mod goto;
 mod keys;
 mod layout;
 mod loading;
@@ -9,6 +10,7 @@ mod ui;
 use serde::Deserialize;
 
 pub(crate) use self::{
+    goto::GoToConfig,
     keys::{Action, KeyBindings, KeyContext, KeyList},
     layout::{LayoutConfig, PaneWeights},
     loading::config_dir,
@@ -19,6 +21,7 @@ pub(crate) use self::{
 struct Config {
     ui: UiConfig,
     places: PlacesConfig,
+    go_to: GoToConfig,
     layout: LayoutConfig,
     keys: KeyBindings,
 }
@@ -27,6 +30,7 @@ struct Config {
 struct ConfigFile {
     ui: Option<ui::UiConfigOverride>,
     places: Option<places::PlacesConfigOverride>,
+    go_to: Option<goto::GoToConfigOverride>,
     layout: Option<layout::LayoutConfigOverride>,
     keys: Option<keys::KeysConfigOverride>,
 }
@@ -47,6 +51,10 @@ pub(crate) fn layout() -> LayoutConfig {
     loading::active_config().layout
 }
 
+pub(crate) fn go_to() -> &'static GoToConfig {
+    &loading::active_config().go_to
+}
+
 pub(crate) fn keys() -> &'static KeyBindings {
     &loading::active_config().keys
 }
@@ -56,6 +64,7 @@ impl Config {
         Self {
             ui: UiConfig::default(),
             places: PlacesConfig::default(),
+            go_to: GoToConfig::default(),
             layout: LayoutConfig::default(),
             keys: KeyBindings::default(),
         }
@@ -69,6 +78,9 @@ impl Config {
         }
         if let Some(places) = parsed.places {
             resolved.places = PlacesConfig::from_override(places, &resolved.places);
+        }
+        if let Some(go_to) = parsed.go_to {
+            resolved.go_to = GoToConfig::from_override(go_to);
         }
         if let Some(layout) = parsed.layout {
             match LayoutConfig::from_override(layout) {

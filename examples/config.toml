@@ -57,6 +57,20 @@
 # files = 45
 # preview = 45
 
+# Customize the Go To overlay (opened with g). Up to 5 entries are shown.
+# Each entry requires a title and a path (absolute or ~/...).
+# Omit [go_to] entirely (or set entries = []) to fall back to the first 5
+# items from the Places pane.
+#
+# [go_to]
+# entries = [
+#   { title = "Home",      path = "~" },
+#   { title = "Documents", path = "~/Documents" },
+#   { title = "Downloads", path = "~/Downloads" },
+#   { title = "Config",    path = "~/.config" },
+#   { title = "Projects",  path = "~/code" },
+# ]
+
 # Rebind browser action keys. Each value may be a single key, a list, or [].
 #
 # Keys may be one-character strings, named keys, or modifier bindings.
